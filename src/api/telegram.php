@@ -5,7 +5,9 @@
 
     class Telegram {
         private $httpClient;
+        private $offset;
         public $lastChatId;
+
 
         public function __construct($botUrl, $botToken) {
             $this->httpClient = new Client([
@@ -30,7 +32,15 @@
             return $responseBody->result[$length - 1];
             
         }
+        public function confirmMessage() {
+            $response = $this->httpClient->request('POST', 'getUpdates', [
+                'json' => [
+                    'offset' => $this->offset + 1
+                ]
+            ]);    
+        }
     }
     $tl = new Telegram("https://api.telegram.org/", "bot310341855:AAGF60Bu1mHjDjjEn31ekxwJmKw-OMTBlqg/");
     print_r($tl->getLastMessage());
+    $tl->confirmMessage();
 ?>
