@@ -1,5 +1,5 @@
 <?php 
-    require "../../vendor/autoload.php";
+    require "/../../vendor/autoload.php";
 
     use GuzzleHttp\Client;
 
@@ -15,7 +15,9 @@
                 
 		    ]);
         }
-        
+        public function getChatId() {
+            return $this->lastChatId;
+        }
         public function getLastMessage() {
             
             $response = $this->httpClient->request('POST', 'getUpdates');
@@ -26,10 +28,12 @@
                return FALSE;
            }
            
-            $this->offset = (int)$responseBody->result[$length - 1]->update_id;
-            $this->lastChatId = $responseBody->result[$length - 1]->message->chat->id;
-            
-            return $responseBody->result[$length - 1];
+           $this->offset = (int)$responseBody->result[$length - 1]->update_id;
+           $this->lastChatId = $responseBody->result[$length - 1]->message->chat->id;
+            if(!empty($responseBody->result[$length - 1]->message->location)) {
+                return $responseBody->result[$length - 1]->message->location;
+            }
+            return $responseBody->result[$length - 1]->message->text;
             
         }
         public function confirmMessage() {
@@ -39,8 +43,17 @@
                 ]
             ]);    
         }
+        public function sendMessage($chatId, $message, $keyboard ) { 
+            $response = $this->httpClient->request('POST', 'sendMessage', [
+			'json' => ['chat_id' => $this->lastChatId, 
+						'text' => $message, 
+                        'reply_markup' => json_encode($keyboard)
+                    ]
+            ]);
+            return $response->getStatusCode();
+        }
+        
+
     }
-    $tl = new Telegram("https://api.telegram.org/", "bot310341855:AAGF60Bu1mHjDjjEn31ekxwJmKw-OMTBlqg/");
-    print_r($tl->getLastMessage());
-    $tl->confirmMessage();
+    
 ?>
