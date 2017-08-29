@@ -3,12 +3,24 @@
 
     require "api/telegram.php";
     require "api/Commands.php";
+    require "api/yandex.php";
 
-    $tl = new Telegram("https://api.telegram.org/", "bot310341855:AAGF60Bu1mHjDjjEn31ekxwJmKw-OMTBlqg/");
-    $lastMessage = $tl->getLastMessage();
-    print_r($lastMessage);
-    $tl->confirmMessage();
-    $command = new Commands($tl);
-    $command->setLastChatId($tl->getChatId());
-    $command->handleCommand($lastMessage);
+    $tl = new Telegram("https://api.telegram.org/", "bot447665582:AAGEiHixHo5KBV8pp-aaYDhKxisfyu8X6DQ/");
+    $location;
+        while(1) {
+            try {
+                sleep(3);
+                $command = new Commands($tl);
+                $lastMessage = $tl->getLastMessage();
+                if(!empty($lastMessage)) {
+                    $tl->confirmMessage();
+                    $command->handleCommand($lastMessage);
+                }
+            } catch(Exception $e) {
+                echo "Exception: " . $e;
+            }
+
+        }
+
+   
 ?>

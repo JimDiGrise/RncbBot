@@ -6,6 +6,7 @@
     class Telegram {
         private $httpClient;
         private $offset;
+        private $location;
         public $lastChatId;
 
 
@@ -23,18 +24,19 @@
             $response = $this->httpClient->request('POST', 'getUpdates');
             $responseBody = json_decode($response->getBody());
             
-           $length = count($responseBody->result);
-           if(empty($responseBody->result[$length - 1])) {
-               return FALSE;
-           }
+            if(empty($responseBody->result)) {
+                return FALSE;
+            }
+            $length = count($responseBody->result);
            
-           $this->offset = (int)$responseBody->result[$length - 1]->update_id;
-           $this->lastChatId = $responseBody->result[$length - 1]->message->chat->id;
+            $this->offset = (int)$responseBody->result[$length - 1]->update_id;
+            $this->lastChatId = $responseBody->result[$length - 1]->message->chat->id;
+
             if(!empty($responseBody->result[$length - 1]->message->location)) {
-                return $responseBody->result[$length - 1]->message->location;
+                $this->location = $responseBody->result[$length - 1]->message->location;
+                return "location was set";    
             }
             return $responseBody->result[$length - 1]->message->text;
-            
         }
         public function confirmMessage() {
             $response = $this->httpClient->request('POST', 'getUpdates', [
@@ -43,7 +45,7 @@
                 ]
             ]);    
         }
-        public function sendMessage($chatId, $message, $keyboard ) { 
+        public function sendMessage( $message, $keyboard ) { 
             $response = $this->httpClient->request('POST', 'sendMessage', [
 			'json' => ['chat_id' => $this->lastChatId, 
 						'text' => $message, 
@@ -52,7 +54,24 @@
             ]);
             return $response->getStatusCode();
         }
-        
+        public function sendPhoto( $path ) { 
+            $res = $this->httpClient->request('POST', 'sendPhoto', [
+			'multipart' => [
+                [
+                    'name'     => 'photo',
+                    'contents' => fopen($path, 'r'),
+                ],
+                [
+                    'name'     => 'chat_id',
+                    'contents' => $this->lastChatId,
+                ],
+            ]    
+            ]);	
+            return $res->getStatusCode();
+        }
+        public function getLocation() {
+            return $this->location;
+        }
 
     }
     
