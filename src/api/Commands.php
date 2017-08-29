@@ -30,7 +30,7 @@ header('Content-type: text/plain; charset=utf-8');
             
         }
         public function handleCommand($command) {
-            if( $command == "/start" || $command == "/geo" || $command == "Отправить местоположение") {
+            if( $command == "/start"  || $command == "Отправить местоположение") {
                 $this->handleStart();
             } else if( $command == "Банкоматы" || $command == "/atms" ){
                 $this->handleListItems("Банкомат");
@@ -49,7 +49,7 @@ header('Content-type: text/plain; charset=utf-8');
                 $this->bot->getChatId() => $this->bot->getLocation()    
             );
             file_put_contents("geolocation.cfg", json_encode($location));
-            $this->bot->sendMessage( "Выберете что искать:", $this->choiseKeyboard);
+            $this->bot->sendMessage( "Выберете что вы хотите найти:", $this->choiseKeyboard);
         }
         private function filterAtms($query, $result) {
             return array_filter($result, function ($i) {
@@ -86,7 +86,8 @@ header('Content-type: text/plain; charset=utf-8');
             
         }
         private function handleStart() {
-            $this->bot->sendMessage( "Бот позволяет найти отделения, банкоматы, терминалы крымского банка РНКБ.", $this->geoKeyboard);
+            $this->bot->sendMessage( "Бот позволяет найти отделения, банкоматы, терминалы крымского банка РНКБ.\n ", $this->geoKeyboard);
+            
             $this->bot->sendMessage( "Отправьте боту вашу местоположение, что получить список объектов вблизи вас.", $this->geoKeyboard);
         }
         private function handleWrong() {
