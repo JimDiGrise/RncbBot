@@ -45,10 +45,13 @@ header('Content-type: text/plain; charset=utf-8');
             }
         }
         private function handleSetLocation() {
-            $location = array(
-                $this->bot->getChatId() => $this->bot->getLocation()    
-            );
-            file_put_contents("geolocation.cfg", json_encode($location));
+            if(!file_exists("geolocation.cfg") ) {
+                file_put_contents("geolocation.cfg", json_encode([]));    
+            }
+            $geo = json_decode(file_get_contents("geolocation.cfg"), true);
+            
+            $geo[$this->bot->getChatId()] = $this->bot->getLocation();
+            file_put_contents("geolocation.cfg", json_encode($geo));
             $this->bot->sendMessage( "Выберете что вы хотите найти:", $this->choiseKeyboard);
         }
         private function filterAtms($query, $result) {
