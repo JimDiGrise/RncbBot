@@ -6,7 +6,7 @@
     require "api/yandex.php";
 
     try {
-    $tl = new Telegram("https://api.telegram.org/", "bot447665582:AAGEiHixHo5KBV8pp-aaYDhKxisfyu8X6DQ/");
+    $tl = new Telegram("https://api.telegram.org/", "bot310341855:AAGF60Bu1mHjDjjEn31ekxwJmKw-OMTBlqg/");
     $location;
         while(1) {
                 sleep(3);
